@@ -1,4 +1,4 @@
-﻿namespace ClientManagment.API.Models.SettingsModels
+﻿namespace ClientManagement.Core.Helpers
 {
 	public class TokenOptionsModel
 	{

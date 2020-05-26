@@ -43,8 +43,6 @@ namespace ClientManagment.API.Controllers
 			{
 				return BadRequest(result);
 			}
-
-			
 		}
 	}
 }
