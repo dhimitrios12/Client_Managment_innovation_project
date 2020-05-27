@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ClientManagement.Core.DTO;
 using ClientManagement.Core.Entities.DTO;
 using ClientManagement.Core.Services;
 using Microsoft.AspNetCore.Http;
@@ -43,6 +44,17 @@ namespace ClientManagment.API.Controllers
 			{
 				return BadRequest(result);
 			}
+		}
+
+		/// <summary>
+		/// Get JWT security token
+		/// </summary>
+		/// <returns>Authentication token</returns>
+		[HttpPost("Token")]
+		public async Task<IActionResult> GetTokenAsync([FromBody] LoginModel model)
+		{
+			var token = await _userService.GetTokenAsync(model);
+			return Ok(token);
 		}
 	}
 }

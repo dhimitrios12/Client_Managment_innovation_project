@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using FluentValidation.Validators;
 
-namespace ClientManagment.API.Validators.CustomValidators
+namespace ClientManagement.Core.Validators.CustomValidators
 {
 	public class UserPasswordValidator : PropertyValidator
 	{
@@ -13,7 +13,7 @@ namespace ClientManagment.API.Validators.CustomValidators
 		protected override bool IsValid(PropertyValidatorContext context)
 		{
 			var password = context.PropertyValue as string;
-			if (password.Any(char.IsDigit) && password.Any(char.IsUpper))
+			if (!string.IsNullOrEmpty(password) && password.Any(char.IsDigit) && password.Any(char.IsUpper))
 			{
 				return true;
 			}

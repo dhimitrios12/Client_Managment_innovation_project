@@ -1,12 +1,19 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
+using ClientManagement.Core.DTO;
 using ClientManagement.Core.Entities;
 using ClientManagement.Core.Entities.DTO;
 using ClientManagement.Core.Helpers;
 using ClientManagement.Core.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
+using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace ClientManagment.Services.Services
 {
@@ -69,6 +76,70 @@ namespace ClientManagment.Services.Services
 				IsSuccess = false,
 				Errors = result.Errors.Select(e => e.Description)
 			};
+		}
+
+		public async Task<UserAuthenticationModel> GetTokenAsync(LoginModel model)
+		{
+			var authenticationModel = new UserAuthenticationModel();
+			var user = await _userManager.FindByEmailAsync(model.Email);
+			if (user == null)
+			{
+				authenticationModel.IsAuthenticated = false;
+				authenticationModel.Message = "There are no accounts registered with this email.";
+				return authenticationModel;
+			}
+
+			if (await _userManager.CheckPasswordAsync(user, model.Password))
+			{
+				authenticationModel.IsAuthenticated = true;
+				authenticationModel.Token = await GenerateJWTSecurityToken(user);
+				authenticationModel.Email = user.Email;
+				var rolesList = await _userManager.GetRolesAsync(user);
+				authenticationModel.Roles = rolesList.ToList();
+				return authenticationModel;
+			}
+			// Incorrect credentials
+			authenticationModel.IsAuthenticated = false;
+			authenticationModel.Message = "Incorrect credentials";
+			return authenticationModel;
+		}
+
+		private async Task<string> GenerateJWTSecurityToken(ApplicationUser user)
+		{
+			var userClaims = await _userManager.GetClaimsAsync(user);
+			var userRoles = await _userManager.GetRolesAsync(user);
+
+			// Generating role claims
+			var roleClaims = new List<Claim>();
+			foreach (string userRole in userRoles)
+			{
+					roleClaims.Add(new Claim("roles", userRole));
+			}
+
+			// Putting all claims together
+			var claims = new []
+			{
+				new Claim(JwtRegisteredClaimNames.Email, user.Email),
+				new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
+				new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), 
+				new Claim("userId", user.Id), 
+			}
+			.Union(userClaims)
+			.Union(roleClaims);
+
+			var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokenOptions.Key));
+			var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+
+			// Building JWT
+			var jwtSecurityToken = new JwtSecurityToken(
+					issuer: _tokenOptions.Issuer,
+					audience: _tokenOptions.Audience,
+					claims: claims,
+					expires: DateTime.UtcNow.AddMinutes(Double.Parse(_tokenOptions.AccessTokenExpiration)),
+					signingCredentials: signingCredentials
+				);
+			var jwtTokenHandler = new JwtSecurityTokenHandler();
+			return jwtTokenHandler.WriteToken(jwtSecurityToken);
 		}
 	}
 }

@@ -18,6 +18,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using ClientManagement.Core.Validators;
 
 namespace ClientManagment.API
 {
@@ -36,7 +37,7 @@ namespace ClientManagment.API
 			services.AddControllers()
 				.AddFluentValidation(options =>
 				{
-					options.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+					options.RegisterValidatorsFromAssembly(Assembly.GetAssembly(typeof(RegisterModelValidator)));
 				});
 
 			// Add EF core configuration
