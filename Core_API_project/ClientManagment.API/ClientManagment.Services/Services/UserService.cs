@@ -135,7 +135,7 @@ namespace ClientManagment.Services.Services
 					issuer: _tokenOptions.Issuer,
 					audience: _tokenOptions.Audience,
 					claims: claims,
-					expires: DateTime.UtcNow.AddMinutes(Double.Parse(_tokenOptions.AccessTokenExpiration)),
+					expires: DateTime.UtcNow.AddDays(Double.Parse(_tokenOptions.AccessTokenExpiration)),
 					signingCredentials: signingCredentials
 				);
 			var jwtTokenHandler = new JwtSecurityTokenHandler();
