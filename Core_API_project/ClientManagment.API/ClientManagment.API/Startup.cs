@@ -19,7 +19,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using AutoMapper;
 using ClientManagement.Core.Validators;
+using ClientManagment.API.Helpers;
+using ClientManagment.Services.AutomapperProfiles;
 
 namespace ClientManagment.API
 {
@@ -35,7 +38,10 @@ namespace ClientManagment.API
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddControllers()
+			services.AddControllers(options =>
+				{
+					options.Filters.Add(new HttpResponseExceptionFilter());
+				})
 				.AddFluentValidation(options =>
 				{
 					options.RegisterValidatorsFromAssembly(Assembly.GetAssembly(typeof(RegisterModelValidator)));
@@ -121,9 +127,13 @@ namespace ClientManagment.API
 				});
 			});
 
+			// Register AutoMapper
+			services.AddAutoMapper(typeof(EntityToModel));
+
 			// Register used dependencies
 			services.AddScoped<IUserService, UserService>();
 			services.AddScoped<IBusinessTypeService, BusinessTypeService>();
+			services.AddScoped<IBusinessService, BusinessService>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

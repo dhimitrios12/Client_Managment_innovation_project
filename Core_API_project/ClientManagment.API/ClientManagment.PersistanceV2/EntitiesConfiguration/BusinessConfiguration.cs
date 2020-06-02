@@ -14,6 +14,7 @@ namespace ClientManagment.PersistanceV2.EntitiesConfiguration
 			builder.Property(b => b.Address).IsRequired().HasMaxLength(500);
 			builder.Property(b => b.StartTime).IsRequired();
 			builder.Property(b => b.FinishTime).IsRequired();
+			builder.Property(b => b.IsActive);
 			builder.HasOne(b => b.BusinessType)
 				.WithMany(b => b.Businesses)
 				.HasForeignKey(b => b.BusinessTypeId)

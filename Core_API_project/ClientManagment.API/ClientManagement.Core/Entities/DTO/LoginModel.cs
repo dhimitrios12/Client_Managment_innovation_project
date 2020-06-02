@@ -1,4 +1,4 @@
-﻿namespace ClientManagement.Core.DTO
+﻿namespace ClientManagement.Core.Entities.DTO
 {
 	public class LoginModel
 	{

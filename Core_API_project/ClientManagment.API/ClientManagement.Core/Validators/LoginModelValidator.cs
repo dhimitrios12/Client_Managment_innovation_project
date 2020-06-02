@@ -1,4 +1,4 @@
-﻿using ClientManagement.Core.DTO;
+﻿using ClientManagement.Core.Entities.DTO;
 using FluentValidation;
 
 namespace ClientManagement.Core.Validators

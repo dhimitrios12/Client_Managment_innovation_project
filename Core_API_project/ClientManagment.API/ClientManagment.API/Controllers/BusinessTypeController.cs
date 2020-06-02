@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ClientManagement.Core.Helpers;
 using ClientManagement.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -28,6 +29,8 @@ namespace ClientManagment.API.Controllers
 		public async Task<IActionResult> Get()
 		{
 			var businessTypes = await _businessTypeService.GetBusinessTypesAsync();
+			throw new HttpResponseException() {Status = 404, Value = new {Email = "not correct email"}};
+			//throw new ArgumentNullException();
 			return Ok(businessTypes);
 		}
 

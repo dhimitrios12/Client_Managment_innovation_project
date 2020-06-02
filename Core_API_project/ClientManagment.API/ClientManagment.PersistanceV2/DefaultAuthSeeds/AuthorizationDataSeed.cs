@@ -41,17 +41,17 @@ namespace ClientManagment.PersistanceV2.DefaultAuthSeeds
 
 			await CreateUsers(defaultAdministrator, Authorization.defaultAdmin_password,
 				Authorization.defaultAdmin_role,
-				userManager, roleManager);
+				userManager);
 			await CreateUsers(defaultBusinessman, Authorization.defaultBusinessman_password,
 				Authorization.defaultBusinessman_role,
-				userManager, roleManager);
-			await CreateUsers(defaultCustomer, Authorization.defaultBusinessman_password,
+				userManager);
+			await CreateUsers(defaultCustomer, Authorization.defaultCustomer_password,
 				Authorization.defaultCustomer_role,
-				userManager, roleManager);
+				userManager);
 		}
 
 		private static async Task CreateUsers(ApplicationUser user, string password, Authorization.Roles role, 
-			UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+			UserManager<ApplicationUser> userManager)
 		{
 			if (userManager.Users.All(u => u.Id != user.Id))
 			{

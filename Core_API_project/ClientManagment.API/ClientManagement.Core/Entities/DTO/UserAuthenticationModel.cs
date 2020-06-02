@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ClientManagement.Core.DTO
+namespace ClientManagement.Core.Entities.DTO
 {
 	public class UserAuthenticationModel
 	{
