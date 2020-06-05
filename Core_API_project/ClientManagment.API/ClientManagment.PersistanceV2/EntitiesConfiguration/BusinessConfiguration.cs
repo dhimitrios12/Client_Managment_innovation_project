@@ -19,6 +19,8 @@ namespace ClientManagment.PersistanceV2.EntitiesConfiguration
 				.WithMany(b => b.Businesses)
 				.HasForeignKey(b => b.BusinessTypeId)
 				.OnDelete(DeleteBehavior.Restrict);
+			builder.HasOne(x => x.User)
+				.WithOne().OnDelete(DeleteBehavior.ClientCascade);
 		}
 	}
 }

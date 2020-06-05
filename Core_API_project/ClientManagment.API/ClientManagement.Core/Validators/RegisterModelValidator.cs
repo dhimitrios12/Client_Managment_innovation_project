@@ -8,6 +8,8 @@ namespace ClientManagement.Core.Validators
 	{
 		public RegisterModelValidator()
 		{
+			RuleFor(x => x.Name).NotEmpty().MaximumLength(50);
+			RuleFor(x => x.Surname).NotEmpty().MaximumLength(50);
 			RuleFor(x => x.Email).EmailAddress().NotEmpty();
 			RuleFor(x => x.Password).SetValidator(new UserPasswordValidator())
 				.NotEmpty().MinimumLength(6);

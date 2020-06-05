@@ -134,6 +134,7 @@ namespace ClientManagment.API
 			services.AddScoped<IUserService, UserService>();
 			services.AddScoped<IBusinessTypeService, BusinessTypeService>();
 			services.AddScoped<IBusinessService, BusinessService>();
+			services.AddScoped<IBService, BServiceService>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

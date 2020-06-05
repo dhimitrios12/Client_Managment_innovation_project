@@ -9,6 +9,7 @@ namespace ClientManagment.Services.AutomapperProfiles
 		public EntityToModel()
 		{
 			CreateMap<Business, BusinessModel>();
+			CreateMap<BService, BServiceDTO>();
 		}
 	}
 }

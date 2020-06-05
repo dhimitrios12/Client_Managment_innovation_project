@@ -9,5 +9,6 @@ namespace ClientManagement.Core.Entities.DTO
 		public DateTime StartTime { get; set; }
 		public DateTime FinishTime { get; set; }
 		public int BusinessTypeId { get; set; }
+		public string UserId { get; set; }
 	}
 }

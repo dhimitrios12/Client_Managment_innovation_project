@@ -18,12 +18,13 @@ namespace ClientManagment.PersistanceV2.Contexts
 
 		public DbSet<BusinessType> BusinessTypes { get; set; }
 		public DbSet<Business> Business { get; set; }
+		public DbSet<BService> Services { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
 			base.OnModelCreating(builder);
 			// Changing default identity tables names
-			builder.Entity<ApplicationUser>().ToTable("Users");
+			builder.ApplyConfiguration(new ApplicationUserConfiguration());
 			builder.Entity<IdentityRole>().ToTable("Roles");
 			builder.Entity<IdentityUserClaim<string>>().ToTable("UserClaims");
 			builder.Entity<IdentityUserToken<string>>().ToTable("UserTokens");
@@ -40,6 +41,7 @@ namespace ClientManagment.PersistanceV2.Contexts
 
 			builder.ApplyConfiguration(new BusinessTypeConfiguration());
 			builder.ApplyConfiguration(new BusinessConfiguration());
+			builder.ApplyConfiguration(new BServiceConfiguration());
 		}
 	}
 }

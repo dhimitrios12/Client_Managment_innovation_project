@@ -19,6 +19,8 @@ namespace ClientManagment.PersistanceV2.DefaultAuthSeeds
 			// Seed default users
 			var defaultAdministrator = new ApplicationUser
 			{
+				Name = Authorization.defaultAdmin_username, 
+				Surname = Authorization.defaultAdmin_username, 
 				UserName = Authorization.defaultAdmin_username, 
 				Email = Authorization.defaultAdmin_email, 
 				EmailConfirmed = true, 
@@ -26,6 +28,8 @@ namespace ClientManagment.PersistanceV2.DefaultAuthSeeds
 			};
 			var defaultBusinessman = new ApplicationUser
 			{
+				Name = Authorization.defaultBusinessman_username,
+				Surname = Authorization.defaultBusinessman_username,
 				UserName = Authorization.defaultBusinessman_username,
 				Email = Authorization.defaultBusinessman_email,
 				EmailConfirmed = true,
@@ -33,6 +37,8 @@ namespace ClientManagment.PersistanceV2.DefaultAuthSeeds
 			};
 			var defaultCustomer = new ApplicationUser
 			{
+				Name = Authorization.defaultCustomer_username,
+				Surname = Authorization.defaultCustomer_username,
 				UserName = Authorization.defaultCustomer_username,
 				Email = Authorization.defaultCustomer_email,
 				EmailConfirmed = true,
