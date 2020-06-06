@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ClientManagement.Core.Entities;
+﻿using ClientManagement.Core.Entities;
 using ClientManagment.PersistanceV2.EntitiesConfiguration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -19,6 +16,8 @@ namespace ClientManagment.PersistanceV2.Contexts
 		public DbSet<BusinessType> BusinessTypes { get; set; }
 		public DbSet<Business> Business { get; set; }
 		public DbSet<BService> Services { get; set; }
+		public DbSet<ServiceRequest> ServiceRequests { get; set; }
+		public DbSet<ServiceServiceRequest> SerrviceServiceRequests { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
@@ -42,6 +41,8 @@ namespace ClientManagment.PersistanceV2.Contexts
 			builder.ApplyConfiguration(new BusinessTypeConfiguration());
 			builder.ApplyConfiguration(new BusinessConfiguration());
 			builder.ApplyConfiguration(new BServiceConfiguration());
+			builder.ApplyConfiguration(new ServiceRequestConfiguration());
+			builder.ApplyConfiguration(new ServiceServiceRequestConfiguration());
 		}
 	}
 }

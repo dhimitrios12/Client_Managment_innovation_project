@@ -4,14 +4,16 @@ using ClientManagment.PersistanceV2.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ClientManagment.PersistanceV2.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20200606102628_AddedServicerequestsAndItsrelations")]
+    partial class AddedServicerequestsAndItsrelations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -217,6 +219,9 @@ namespace ClientManagment.PersistanceV2.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("ClientId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
@@ -237,28 +242,28 @@ namespace ClientManagment.PersistanceV2.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ClientId");
 
                     b.ToTable("ServiceRequest");
                 });
 
-            modelBuilder.Entity("ClientManagement.Core.Entities.ServiceServiceRequest", b =>
+            modelBuilder.Entity("ClientManagement.Core.Entities.UserServiceRequest", b =>
                 {
-                    b.Property<int>("ServiceId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("ServiceRequestId")
                         .HasColumnType("int");
 
-                    b.HasKey("ServiceId", "ServiceRequestId");
+                    b.HasKey("UserId", "ServiceRequestId");
 
                     b.HasIndex("ServiceRequestId");
 
-                    b.ToTable("ServiceXServiceRequests");
+                    b.ToTable("UserServiceRequests");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -419,22 +424,20 @@ namespace ClientManagment.PersistanceV2.Migrations
                 {
                     b.HasOne("ClientManagement.Core.Entities.ApplicationUser", "Client")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ClientId");
                 });
 
-            modelBuilder.Entity("ClientManagement.Core.Entities.ServiceServiceRequest", b =>
+            modelBuilder.Entity("ClientManagement.Core.Entities.UserServiceRequest", b =>
                 {
-                    b.HasOne("ClientManagement.Core.Entities.BService", "Service")
-                        .WithMany("ServiceServiceRequests")
-                        .HasForeignKey("ServiceId")
+                    b.HasOne("ClientManagement.Core.Entities.ServiceRequest", "ServiceRequest")
+                        .WithMany("UserServiceRequests")
+                        .HasForeignKey("ServiceRequestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ClientManagement.Core.Entities.ServiceRequest", "ServiceRequest")
-                        .WithMany("ServiceServiceRequests")
-                        .HasForeignKey("ServiceRequestId")
+                    b.HasOne("ClientManagement.Core.Entities.ApplicationUser", "User")
+                        .WithMany("UserServiceRequests")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

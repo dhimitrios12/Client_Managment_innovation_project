@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using ClientManagement.Core.Entities;
 using ClientManagement.Core.Entities.DTO;
 
 namespace ClientManagement.Core.Services

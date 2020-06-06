@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Collections.Generic;
+using AutoMapper;
 using ClientManagement.Core.Entities;
 using ClientManagement.Core.Entities.DTO;
 
@@ -10,6 +11,7 @@ namespace ClientManagment.Services.AutomapperProfiles
 		{
 			CreateMap<BusinessModel, Business>();
 			CreateMap<BServiceDTO, BService>();
+			CreateMap<ServiceRequestDTO, ServiceRequest>();
 		}
 	}
 }

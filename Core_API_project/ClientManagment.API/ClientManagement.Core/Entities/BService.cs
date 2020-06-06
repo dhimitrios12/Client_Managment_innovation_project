@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ClientManagement.Core.Entities
 {
@@ -14,5 +15,6 @@ namespace ClientManagement.Core.Entities
 		public DateTime ModifiedOn { get; set; }
 		public int BusinessId { get; set; }
 		public virtual Business Business { get; set; }
+		public IList<ServiceServiceRequest> ServiceServiceRequests{ get; set; }
 	}
 }

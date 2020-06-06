@@ -28,6 +28,8 @@ namespace ClientManagment.API
 {
 	public class Startup
 	{
+		private readonly string _myCorsPolicy = "_mySpecificCORSPolicy";
+
 		public Startup(IConfiguration configuration)
 		{
 			Configuration = configuration;
@@ -46,6 +48,17 @@ namespace ClientManagment.API
 				{
 					options.RegisterValidatorsFromAssembly(Assembly.GetAssembly(typeof(RegisterModelValidator)));
 				});
+
+			// Configure CORS
+			services.AddCors(options => options.AddPolicy(
+				name: _myCorsPolicy,
+				builder =>
+				{
+					builder.AllowAnyOrigin()
+						.AllowAnyHeader()
+						.AllowAnyMethod();
+				})
+			);
 
 			// Add EF core configuration
 			services.AddDbContext<ApplicationDBContext>(options =>
@@ -135,6 +148,7 @@ namespace ClientManagment.API
 			services.AddScoped<IBusinessTypeService, BusinessTypeService>();
 			services.AddScoped<IBusinessService, BusinessService>();
 			services.AddScoped<IBService, BServiceService>();
+			services.AddScoped<IClientServiceRequest, ClientServiceRequestService>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -156,6 +170,9 @@ namespace ClientManagment.API
 			app.UseHttpsRedirection();
 
 			app.UseRouting();
+
+			//Use CORS
+			app.UseCors(_myCorsPolicy);
 
 			app.UseAuthentication();
 
