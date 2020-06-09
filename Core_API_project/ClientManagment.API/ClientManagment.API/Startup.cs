@@ -165,6 +165,7 @@ namespace ClientManagment.API
 			app.UseSwaggerUI(options =>
 			{
 				options.SwaggerEndpoint("/swagger/v1/swagger.json", "Client managment API v1");
+				options.RoutePrefix = string.Empty;
 			});
 
 			app.UseHttpsRedirection();
