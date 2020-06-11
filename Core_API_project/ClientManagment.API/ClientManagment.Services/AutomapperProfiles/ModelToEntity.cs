@@ -12,6 +12,7 @@ namespace ClientManagment.Services.AutomapperProfiles
 			CreateMap<BusinessModel, Business>();
 			CreateMap<BServiceDTO, BService>();
 			CreateMap<ServiceRequestDTO, ServiceRequest>();
+			CreateMap<RegisterViewModel, ApplicationUser>();
 		}
 	}
 }

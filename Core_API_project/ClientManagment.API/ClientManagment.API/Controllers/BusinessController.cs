@@ -16,16 +16,16 @@ namespace ClientManagment.API.Controllers
 		    _businessService = businessService;
 	    }
 
-	    [HttpPost]
-        public async Task<IActionResult> AddBusiness([FromBody] BusinessModel model)
-        {
-	        if (!ModelState.IsValid)
-	        {
-		        return BadRequest(ModelState);
-	        }
+		[HttpPost]
+		public async Task<IActionResult> AddBusiness([FromBody] BusinessModel model)
+		{
+			if (!ModelState.IsValid)
+			{
+				return BadRequest(ModelState);
+			}
 
-	        BusinessModel business = await _businessService.AddBusinessAsync(model);
-	        return Ok(business);
-        }
-    }
+			BusinessModel business = await _businessService.AddBusinessAsync(model);
+			return Ok(business);
+		}
+	}
 }

@@ -13,9 +13,6 @@ namespace ClientManagement.Core.Validators
 			RuleFor(x => x.Email).EmailAddress().NotEmpty();
 			RuleFor(x => x.Password).SetValidator(new UserPasswordValidator())
 				.NotEmpty().MinimumLength(6);
-			RuleFor(x => x.ConfirmPassword)
-				.Must((registerViewModel, confirmPass) => confirmPass == registerViewModel.Password)
-				.NotEmpty();
 		}
 	}
 }

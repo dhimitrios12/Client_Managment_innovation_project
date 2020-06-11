@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ClientManagement.Core.Entities.DTO
 {
 	public class UserAuthenticationModel
 	{
-		public bool IsAuthenticated { get; set; }
-		public string Message { get; set; }
+		public String UserId { get; set; }
 		public string Email { get; set; }
 		public List<string> Roles { get; set; }
+		public DateTime? TokenExpirationDate { get; set; }
 		public string Token { get; set; }
 	}
 }

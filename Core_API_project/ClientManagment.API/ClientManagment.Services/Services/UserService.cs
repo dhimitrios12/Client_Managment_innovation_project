@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using ClientManagement.Core.Entities;
 using ClientManagement.Core.Entities.DTO;
 using ClientManagement.Core.Helpers;
@@ -21,59 +22,66 @@ namespace ClientManagment.Services.Services
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly RoleManager<IdentityRole> _roleManager;
 		private readonly TokenOptionsModel _tokenOptions;
+		private readonly IMapper _mapper;
 
-		public UserService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<TokenOptionsModel> tokenOptions)
+		public UserService(UserManager<ApplicationUser> userManager, 
+			RoleManager<IdentityRole> roleManager, 
+			IOptions<TokenOptionsModel> tokenOptions, 
+			IMapper mapper)
 		{
 			_userManager = userManager;
 			_roleManager = roleManager;
+			_mapper = mapper;
 			_tokenOptions = tokenOptions.Value;
 		}
 
-		public async Task<UserManagerResponse> RegisterUserAsync(RegisterViewModel model)
+		public async Task<UserAuthenticationModel> RegisterUserAsync(RegisterViewModel model)
 		{
-			if (model.Password != model.ConfirmPassword)
-			{
-				return new UserManagerResponse
-				{
-					Message = "Passwords do not match",
-					IsSuccess = false
-				};
-			}
-
-			var user = new ApplicationUser
-			{
-				Email = model.Email, 
-				UserName = model.Email
-			};
+			var user = _mapper.Map<ApplicationUser>(model);
 
 			var userWithSameEmail = await _userManager.FindByEmailAsync(user.Email);
 			if (userWithSameEmail != null)
 			{
-				return new UserManagerResponse
+				throw new HttpResponseException
 				{
-					Message = "Cold not create user.",
-					IsSuccess = false,
-					Errors = new string[] { "There is already a user registered with this email." },
+					Status = 409,
+					Value = new
+					{
+						Field = "Email",
+						Message = $"There is already an user registered with this email: {user.Email}"
+					}
 				};
 			}
 
+			user.UserName = string.Format("{0}.{1}", user.Name.ToLowerInvariant(), user.Surname.ToLowerInvariant());
 			var result = await _userManager.CreateAsync(user, model.Password);
 
 			if (result.Succeeded == true)
 			{
 				await _userManager.AddToRoleAsync(user, Authorization.Roles.Customer.ToString());
-				return new UserManagerResponse
+				
+				var authenticationModel = new UserAuthenticationModel
 				{
-					Message = "User was created successfully.",
-					IsSuccess = true
+					UserId = user.Id,
+					Email = user.Email,
+					Roles = new List<string>{ Authorization.Roles.Customer.ToString() }
 				};
+				var tokenData = await GenerateJwtSecurityToken(user);
+				authenticationModel.TokenExpirationDate = DateTime.Parse(tokenData["expireDate"].ToString());
+				authenticationModel.Token = tokenData["token"].ToString();
+				return authenticationModel;
 			}
 
-			return new UserManagerResponse
+
+			// Could not create user for some reason
+			throw new HttpResponseException
 			{
-				Message = "Cold not create user.",
-				IsSuccess = false,
-				Errors = result.Errors.Select(e => e.Description)
+				Status = 500,
+				Value = new
+				{
+					Field = "None",
+					Message = $"Could not register user. InternalError."
+				}
 			};
 		}
 
@@ -83,27 +91,39 @@ namespace ClientManagment.Services.Services
 			var user = await _userManager.FindByEmailAsync(model.Email);
 			if (user == null)
 			{
-				authenticationModel.IsAuthenticated = false;
-				authenticationModel.Message = "There are no accounts registered with this email.";
-				return authenticationModel;
+				throw new HttpResponseException
+				{
+					Status = 404,
+					Value = new { Field = "Email", 
+						Message = "There are no accounts registered with this email." }
+				};
 			}
 
 			if (await _userManager.CheckPasswordAsync(user, model.Password))
 			{
-				authenticationModel.IsAuthenticated = true;
-				authenticationModel.Token = await GenerateJWTSecurityToken(user);
+				var tokenData = await GenerateJwtSecurityToken(user);
+				authenticationModel.Token = tokenData["token"].ToString();
+				authenticationModel.TokenExpirationDate = DateTime.Parse(tokenData["expireDate"].ToString());
 				authenticationModel.Email = user.Email;
+				authenticationModel.UserId = user.Id;
 				var rolesList = await _userManager.GetRolesAsync(user);
 				authenticationModel.Roles = rolesList.ToList();
 				return authenticationModel;
 			}
+
 			// Incorrect credentials
-			authenticationModel.IsAuthenticated = false;
-			authenticationModel.Message = "Incorrect credentials";
-			return authenticationModel;
+			throw new HttpResponseException
+			{
+				Status = 404,
+				Value = new
+				{
+					Field = "Password",
+					Message = "Incorrect password"
+				}
+			};
 		}
 
-		private async Task<string> GenerateJWTSecurityToken(ApplicationUser user)
+		private async Task<Dictionary<string, object>> GenerateJwtSecurityToken(ApplicationUser user)
 		{
 			var userClaims = await _userManager.GetClaimsAsync(user);
 			var userRoles = await _userManager.GetRolesAsync(user);
@@ -130,15 +150,20 @@ namespace ClientManagment.Services.Services
 			var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
 
 			// Building JWT
+			DateTime expireDate = DateTime.UtcNow.AddDays(Double.Parse(_tokenOptions.AccessTokenExpiration));
 			var jwtSecurityToken = new JwtSecurityToken(
 					issuer: _tokenOptions.Issuer,
 					audience: _tokenOptions.Audience,
 					claims: claims,
-					expires: DateTime.UtcNow.AddDays(Double.Parse(_tokenOptions.AccessTokenExpiration)),
+					expires: expireDate,
 					signingCredentials: signingCredentials
 				);
 			var jwtTokenHandler = new JwtSecurityTokenHandler();
-			return jwtTokenHandler.WriteToken(jwtSecurityToken);
+			return new Dictionary<string, object>()
+			{
+				{"token", jwtTokenHandler.WriteToken(jwtSecurityToken)},
+				{"expireDate", expireDate}
+			};
 		}
 	}
 }

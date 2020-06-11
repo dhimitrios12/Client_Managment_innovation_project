@@ -13,47 +13,40 @@ namespace ClientManagment.API.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-	    private readonly IUserService _userService;
+        private readonly IUserService _userService;
 
-	    public AuthenticationController(IUserService userService)
-	    {
-		    _userService = userService;
-	    }
+        public AuthenticationController(IUserService userService)
+        {
+            _userService = userService;
+        }
 
-		// api/authentication/register
-		/// <summary>
-		/// Registers a new user to the service
-		/// </summary>
-		/// <param name="model">Register model</param>
-		[HttpPost("Register")]
-		public async Task<IActionResult> RegisterAsync([FromBody]RegisterViewModel model)
-		{
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
+        // api/authentication/register
+        /// <summary>
+        /// Registers a new user to the service
+        /// </summary>
+        /// <param name="model">Register model</param>
+        [HttpPost("Register")]
+        public async Task<IActionResult> RegisterAsync([FromBody]RegisterViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-			var result = await _userService.RegisterUserAsync(model);
+            var response = await _userService.RegisterUserAsync(model);
 
-			if (result.IsSuccess)
-			{
-				return Ok(result);
-			}
-			else
-			{
-				return BadRequest(result);
-			}
-		}
+            return Ok(response);
+        }
 
-		/// <summary>
-		/// Get JWT security token
-		/// </summary>
-		/// <returns>Authentication token</returns>
-		[HttpPost("Token")]
-		public async Task<IActionResult> GetTokenAsync([FromBody] LoginModel model)
-		{
-			var token = await _userService.GetTokenAsync(model);
-			return Ok(token);
-		}
-	}
+        /// <summary>
+        /// Get JWT security token
+        /// </summary>
+        /// <returns>Authentication token</returns>
+        [HttpPost("Token")]
+        public async Task<IActionResult> GetTokenAsync([FromBody] LoginModel model)
+        {
+            var token = await _userService.GetTokenAsync(model);
+            return Ok(token);
+        }
+    }
 }

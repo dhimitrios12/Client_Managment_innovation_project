@@ -24,16 +24,16 @@ namespace ClientManagment.API.Controllers
 		/// </summary>
 		/// <param name="model"></param>
 		[HttpPost]
-	    public async Task<IActionResult> AddServiceAsync([FromBody] BServiceDTO model)
-	    {
-		    if (!ModelState.IsValid)
-		    {
-			    return BadRequest(ModelState);
-		    }
+		public async Task<IActionResult> AddServiceAsync([FromBody] BServiceDTO model)
+		{
+			if (!ModelState.IsValid)
+			{
+				return BadRequest(ModelState);
+			}
 
-		    var response = await _bservice.AddServiceAsync(model);
-		    return Ok(response);
-	    }
+			var response = await _bservice.AddServiceAsync(model);
+			return Ok(response);
+		}
 
 
 		/// <summary>
@@ -91,6 +91,5 @@ namespace ClientManagment.API.Controllers
 		{
 			return Ok(await _clientServiceRequest.GetUserServiceRequestByIdAsync(serviceRequestId));
 		}
-
 	}
 }
