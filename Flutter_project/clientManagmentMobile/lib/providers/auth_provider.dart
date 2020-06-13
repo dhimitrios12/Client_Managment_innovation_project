@@ -42,7 +42,6 @@ class Auth with ChangeNotifier {
       _roles = List<Role>();
     }
     roles.forEach((role) {
-      var a = role.toLowerCase();
       switch (role.toLowerCase()) {
         case 'businessman':
           _roles.add(Role.Businessman);

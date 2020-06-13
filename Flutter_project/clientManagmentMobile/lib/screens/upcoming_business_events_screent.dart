@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class UpcomingEvets extends StatelessWidget {
+class UpcomingBusinessEvents extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(

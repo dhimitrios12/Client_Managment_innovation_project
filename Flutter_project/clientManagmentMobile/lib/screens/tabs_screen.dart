@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import './upcoming_events_screent.dart';
+import './upcoming_business_events_screent.dart';
 import './randomSecondTab.dart';
 import '../providers/auth_provider.dart';
+
+class _TabsIndexes {
+  final Widget page;
+  final String title;
+  final int customerIndex;
+  final int businessIndex;
+
+  _TabsIndexes(this.page, this.title, this.customerIndex, this.businessIndex);
+}
 
 class TabsScreen extends StatefulWidget {
   @override
@@ -11,11 +20,32 @@ class TabsScreen extends StatefulWidget {
 }
 
 class _TabsScreenState extends State<TabsScreen> {
-  final List<Map<String, Object>> _pages = [
-    {'page': UpcomingEvets(), 'title': 'Eventet'},
-    {'page': RandomTab(), 'title': 'Random'},
+  final List<_TabsIndexes> _pages = [
+    _TabsIndexes(UpcomingBusinessEvents(), 'Events B', -1, 0),
+    _TabsIndexes(RandomTab(), 'Random tab 1', 0, 1),
+    _TabsIndexes(RandomTab(), 'Random tab 2', 1, 2),
   ];
+
   int _selectedPageIndex = 0;
+
+  _TabsIndexes _getSelectedTabWidget() {
+    _TabsIndexes curentTab;
+    if (Provider.of<Auth>(context, listen: false).hasRole(Role.Businessman)) {
+      curentTab = _pages.firstWhere(
+          (element) => element.businessIndex == _selectedPageIndex,
+          orElse: null);
+    } else {
+      curentTab = _pages.firstWhere(
+          (element) => element.customerIndex == _selectedPageIndex,
+          orElse: null);
+    }
+
+    if (curentTab == null) {
+      curentTab = _pages.firstWhere((element) => element.customerIndex == 1);
+    }
+
+    return curentTab;
+  }
 
   void _selectPage(index) {
     if (index > _pages.length - 1) {
@@ -30,9 +60,9 @@ class _TabsScreenState extends State<TabsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_pages[_selectedPageIndex]['title']),
+        title: Text(_getSelectedTabWidget().title),
       ),
-      body: _pages[_selectedPageIndex]['page'],
+      body: _getSelectedTabWidget().page,
       bottomNavigationBar: BottomNavigationBar(
         onTap: _selectPage,
         backgroundColor: Colors.white,
