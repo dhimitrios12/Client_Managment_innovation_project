@@ -33,7 +33,7 @@ namespace ClientManagment.API
 				catch (Exception e)
 				{
 					var logger = loggerFactory.CreateLogger<Program>();
-					logger.LogError("An error has occurred seeding data in the database");
+					logger.LogError("An error has occurred seeding data in the database: " + e.Message);
 				}
 			}
 

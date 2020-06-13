@@ -87,7 +87,6 @@ namespace ClientManagment.Services.Services
 
 		public async Task<UserAuthenticationModel> GetTokenAsync(LoginModel model)
 		{
-			var authenticationModel = new UserAuthenticationModel();
 			var user = await _userManager.FindByEmailAsync(model.Email);
 			if (user == null)
 			{
@@ -101,11 +100,14 @@ namespace ClientManagment.Services.Services
 
 			if (await _userManager.CheckPasswordAsync(user, model.Password))
 			{
+				var authenticationModel = _mapper.Map<UserAuthenticationModel>(user);
 				var tokenData = await GenerateJwtSecurityToken(user);
 				authenticationModel.Token = tokenData["token"].ToString();
 				authenticationModel.TokenExpirationDate = DateTime.Parse(tokenData["expireDate"].ToString());
-				authenticationModel.Email = user.Email;
-				authenticationModel.UserId = user.Id;
+				// authenticationModel.Name = user.Name;
+				// authenticationModel.Surname = user.Surname;
+				// authenticationModel.Email = user.Email;
+				// authenticationModel.UserId = user.Id;
 				var rolesList = await _userManager.GetRolesAsync(user);
 				authenticationModel.Roles = rolesList.ToList();
 				return authenticationModel;

@@ -16,6 +16,10 @@ namespace ClientManagment.Services.AutomapperProfiles
 					opt => 
 						opt.MapFrom(x => x.ServiceServiceRequests
 							.Select(ssr => ssr.Service).ToList()));
+			CreateMap<ApplicationUser, UserAuthenticationModel>()
+				.ForMember(x => x.UserId, 
+					opt => 
+						opt.MapFrom(y => y.Id));
 		}
 	}
 }

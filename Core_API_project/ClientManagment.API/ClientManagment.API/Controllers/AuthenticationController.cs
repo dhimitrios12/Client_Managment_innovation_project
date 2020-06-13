@@ -26,7 +26,7 @@ namespace ClientManagment.API.Controllers
         /// </summary>
         /// <param name="model">Register model</param>
         [HttpPost("Register")]
-        public async Task<IActionResult> RegisterAsync([FromBody]RegisterViewModel model)
+        public async Task<IActionResult> RegisterAsync([FromQuery]RegisterViewModel model)
         {
             if (!ModelState.IsValid)
             {
