@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:clientManagmentMobile/models/api_common_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -83,20 +81,20 @@ class _AutharisationPanelState extends State<AutharisationPanel> {
             .register(_name, _surname, _email, _password);
       }
     } on DioError catch (error) {
-      print(error.message);
-      print(error.response.data);
-      var b = error.response.data;
-      //var a = jsonDecode(b);
-      CommonException exceptionData = CommonException.fromJOSN(b);
       String errorMessage = 'Procesi deshtoi. Provoni perseri me vone!';
-      if (exceptionData.field.toLowerCase() == 'email') {
-        if (_authMode == AuthMode.Register) {
-          errorMessage = 'Ekziston nje perdorues i rregjistruar me kete email.';
-        } else {
-          errorMessage = 'Email i gabuar.';
+      if (error.response != null) {
+        CommonException exceptionData =
+            CommonException.fromJOSN(error.response.data);
+        if (exceptionData.field.toLowerCase() == 'email') {
+          if (_authMode == AuthMode.Register) {
+            errorMessage =
+                'Ekziston nje perdorues i rregjistruar me kete email.';
+          } else {
+            errorMessage = 'Email i gabuar.';
+          }
+        } else if (exceptionData.field.toLowerCase() == 'password') {
+          errorMessage = 'Password i gabuar.';
         }
-      } else if (exceptionData.field.toLowerCase() == 'password') {
-        errorMessage = 'Password i gabuar.';
       }
 
       _showErrorDialog(errorMessage);

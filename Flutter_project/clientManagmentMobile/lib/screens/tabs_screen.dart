@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import './upcoming_events_screent.dart';
 import './randomSecondTab.dart';
+import '../providers/auth_provider.dart';
 
 class TabsScreen extends StatefulWidget {
   @override
@@ -16,6 +18,9 @@ class _TabsScreenState extends State<TabsScreen> {
   int _selectedPageIndex = 0;
 
   void _selectPage(index) {
+    if (index > _pages.length - 1) {
+      index = _pages.length - 1;
+    }
     setState(() {
       _selectedPageIndex = index;
     });
@@ -33,9 +38,15 @@ class _TabsScreenState extends State<TabsScreen> {
         backgroundColor: Colors.white,
         currentIndex: _selectedPageIndex,
         items: [
+          if (Provider.of<Auth>(context, listen: false)
+              .hasRole(Role.Businessman))
+            BottomNavigationBarItem(
+              icon: Icon(Icons.event_note),
+              title: Text('Skeduli B'),
+            ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.event_note),
-            title: Text('Eventet'),
+            icon: Icon(Icons.event),
+            title: Text('Skeduli C'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.exit_to_app),
