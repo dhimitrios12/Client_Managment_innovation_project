@@ -5,6 +5,12 @@ namespace ClientManagement.Core.Helpers
 	public class HttpResponseException : Exception
 	{
 		public int Status { get; set; } = 500;
-		public object Value { get; set; }
+		public string Field { get; set; }
+
+		public HttpResponseException(int status, string field, string message) : base(message)
+		{
+			Status = status;
+			Field = field;
+		}
 	}
 }

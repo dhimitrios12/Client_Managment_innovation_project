@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using ClientManagement.Core.Entities;
@@ -33,11 +33,7 @@ namespace ClientManagment.Services.Services
 
 			if (user == null)
 			{
-				throw new HttpResponseException
-				{
-					Status = 404,
-					Value = new { UserId = $"User with id = {userId} does not exist" }
-				};
+				throw new HttpResponseException(404, "UserId", $"User with id = {userId} does not exist");
 			}
 
 			var services = await _context.ServiceRequests
@@ -54,11 +50,7 @@ namespace ClientManagment.Services.Services
 
 			if (user == null)
 			{
-				throw new HttpResponseException
-				{
-					Status = 404,
-					Value = new { UserId = $"User with id = {userId} does not exist" }
-				};
+				throw new HttpResponseException(404, "UserId", $"User with id = {userId} does not exist");
 			}
 
 			var services = await _context.ServiceRequests
@@ -85,16 +77,13 @@ namespace ClientManagment.Services.Services
 
 			if (user == null)
 			{
-				throw new HttpResponseException
-				{
-					Status = 404,
-					Value = new { UserId = $"User with id = {model.UserId} does not exist" }
-				};
+				throw new HttpResponseException(404, "UserId", $"User with id = {model.UserId} does not exist");
 			}
 
 			ServiceRequest serviceRequest = _mapper.Map<ServiceRequest>(model);
 			serviceRequest.CreatedOn = DateTime.UtcNow;
 			serviceRequest.IsApproved = false;
+			serviceRequest.IsActive = true;
 			serviceRequest.Client = user;
 			serviceRequest.ServiceServiceRequests = new List<ServiceServiceRequest>();
 			foreach (int serviceId in model.ServicesIds)
@@ -104,11 +93,7 @@ namespace ClientManagment.Services.Services
 
 				if (service == null)
 				{
-					throw new HttpResponseException
-					{
-						Status = 404,
-						Value = new {ServicesIds = "One or more services do not exist"}
-					};
+					throw new HttpResponseException(404, "ServicesIds", "One or more services do not exist");
 				}
 
 				ServiceServiceRequest sxServiceRequest = new ServiceServiceRequest
@@ -121,6 +106,36 @@ namespace ClientManagment.Services.Services
 			await _context.ServiceRequests.AddAsync(serviceRequest);
 			await _context.SaveChangesAsync();
 			return _mapper.Map<ServiceRequestResponseDTO>(serviceRequest);
+		}
+
+		public async Task<List<BusinessScheduledServiceRequestItemDto>> GetActiveServiceRequestForRBusinessAsync(IEnumerable<Claim> userClaims)
+		{
+			var businessIdClaim = userClaims.FirstOrDefault(x => x.Type == "businessId");
+			if (businessIdClaim == null || int.Parse(businessIdClaim.Value) < 0)
+			{
+				throw new HttpResponseException(404, "Authentication token",
+					"Could not find the appropriate claim for business.");
+			}
+			
+			int businessId = int.Parse(businessIdClaim.Value);
+			
+			var business = await _context.Business.
+				FirstOrDefaultAsync(x => x.Id == businessId && x.IsActive == true);
+			if (business == null)
+			{
+				throw new HttpResponseException(404, "BusinessId", $"There does not exists an active business with id: {businessId}");
+			}
+
+			var scheduledServices = await _context.ServiceRequests
+				.Include(x => x.ServiceServiceRequests)
+				.ThenInclude(x => x.Service)
+				.Include(x => x.Client)
+				.Where(s => s.ServiceServiceRequests
+					.Any(ssr => ssr.Service.BusinessId == businessId))
+				.ToListAsync();
+
+			var scheduledServicesMap = _mapper.Map<List<BusinessScheduledServiceRequestItemDto>>(scheduledServices);
+			return scheduledServicesMap;
 		}
 	}
 }

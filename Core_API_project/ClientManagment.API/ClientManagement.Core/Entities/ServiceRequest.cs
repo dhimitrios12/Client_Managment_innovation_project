@@ -12,6 +12,7 @@ namespace ClientManagement.Core.Entities
 		public DateTime StartTime { get; set; }
 		public DateTime EndTime { get; set; }
 		public DateTime CreatedOn { get; set; }
+		public bool IsActive { get; set; }
 		public IList<ServiceServiceRequest> ServiceServiceRequests { get; set; }
 		public string UserId { get; set; }
 		public ApplicationUser Client { get; set; }

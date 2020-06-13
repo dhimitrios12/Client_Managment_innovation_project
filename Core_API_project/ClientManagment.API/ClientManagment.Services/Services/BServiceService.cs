@@ -32,14 +32,8 @@ namespace ClientManagment.Services.Services
 
 			if (business == null)
 			{
-				throw new HttpResponseException
-				{
-					Status = 400,
-					Value = new
-					{
-						BusinessId = $"There is no business registered with Id = {model.BusinessId}"
-					}
-				};
+				throw new HttpResponseException(404, "BusinessId",
+					$"There is no business registered with Id = {model.BusinessId}.");
 			}
 
 			var service = business.Services
@@ -47,14 +41,8 @@ namespace ClientManagment.Services.Services
 				
 			if (service != null)
 			{
-				throw new HttpResponseException
-				{
-					Status = 400, 
-					Value = new
-					{
-						ServiceName = "There is already a service with this name registered in this business"
-					}
-				};
+				throw new HttpResponseException(409, "ServiceName",
+					"There is already a service with this name registered in this business.");
 			}
 
 			// Add new service
@@ -77,14 +65,8 @@ namespace ClientManagment.Services.Services
 
 			if (business == null)
 			{
-				throw new HttpResponseException
-				{
-					Status = 400,
-					Value = new
-					{
-						BusinessId = $"There is no business registered with Id = {businessId}"
-					}
-				};
+				throw new HttpResponseException(404, "BusinessId",
+					$"There is no business registered with Id = {businessId}.");
 			}
 
 			return _mapper.Map<IEnumerable<BServiceDTO>>(business.Services);

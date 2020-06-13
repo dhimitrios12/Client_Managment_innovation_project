@@ -10,7 +10,9 @@ using ClientManagement.Core.Entities;
 using ClientManagement.Core.Entities.DTO;
 using ClientManagement.Core.Helpers;
 using ClientManagement.Core.Services;
+using ClientManagment.PersistanceV2.Contexts;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
@@ -21,17 +23,19 @@ namespace ClientManagment.Services.Services
 	{
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly RoleManager<IdentityRole> _roleManager;
+		private readonly ApplicationDBContext _context;
 		private readonly TokenOptionsModel _tokenOptions;
 		private readonly IMapper _mapper;
 
 		public UserService(UserManager<ApplicationUser> userManager, 
 			RoleManager<IdentityRole> roleManager, 
 			IOptions<TokenOptionsModel> tokenOptions, 
-			IMapper mapper)
+			IMapper mapper, ApplicationDBContext context)
 		{
 			_userManager = userManager;
 			_roleManager = roleManager;
 			_mapper = mapper;
+			_context = context;
 			_tokenOptions = tokenOptions.Value;
 		}
 
@@ -42,15 +46,8 @@ namespace ClientManagment.Services.Services
 			var userWithSameEmail = await _userManager.FindByEmailAsync(user.Email);
 			if (userWithSameEmail != null)
 			{
-				throw new HttpResponseException
-				{
-					Status = 409,
-					Value = new
-					{
-						Field = "Email",
-						Message = $"There is already an user registered with this email: {user.Email}"
-					}
-				};
+				throw new HttpResponseException(409, "Email",
+					$"There is already an user registered with this email: {user.Email}");
 			}
 
 			user.UserName = string.Format("{0}.{1}", user.Name.ToLowerInvariant(), user.Surname.ToLowerInvariant());
@@ -72,17 +69,8 @@ namespace ClientManagment.Services.Services
 				return authenticationModel;
 			}
 
-
 			// Could not create user for some reason
-			throw new HttpResponseException
-			{
-				Status = 500,
-				Value = new
-				{
-					Field = "None",
-					Message = $"Could not register user. InternalError."
-				}
-			};
+			throw new HttpResponseException(500, null, "Could not register user. InternalError.");
 		}
 
 		public async Task<UserAuthenticationModel> GetTokenAsync(LoginModel model)
@@ -90,12 +78,7 @@ namespace ClientManagment.Services.Services
 			var user = await _userManager.FindByEmailAsync(model.Email);
 			if (user == null)
 			{
-				throw new HttpResponseException
-				{
-					Status = 404,
-					Value = new { Field = "Email", 
-						Message = "There are no accounts registered with this email." }
-				};
+				throw new HttpResponseException(404, "Email", "There are no accounts registered with this email.");
 			}
 
 			if (await _userManager.CheckPasswordAsync(user, model.Password))
@@ -114,15 +97,7 @@ namespace ClientManagment.Services.Services
 			}
 
 			// Incorrect credentials
-			throw new HttpResponseException
-			{
-				Status = 404,
-				Value = new
-				{
-					Field = "Password",
-					Message = "Incorrect password"
-				}
-			};
+			throw new HttpResponseException(409, "Password", "Incorrect password");
 		}
 
 		private async Task<Dictionary<string, object>> GenerateJwtSecurityToken(ApplicationUser user)
@@ -136,14 +111,23 @@ namespace ClientManagment.Services.Services
 			{
 					roleClaims.Add(new Claim("roles", userRole));
 			}
+			
+			// Try getting businessId claim
+			int businessId = -1;
+			if (userRoles.Any(x => x == "Businessman"))
+			{
+				var userBusiness =  await _context.Business.FirstOrDefaultAsync(x => x.UserId == user.Id);
+				businessId = userBusiness?.Id ?? -1;
+			}
 
 			// Putting all claims together
 			var claims = new []
 			{
-				new Claim(JwtRegisteredClaimNames.Email, user.Email),
-				new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
+				new Claim(JwtRegisteredClaimNames.Email, user.Email), 
+				new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName), 
 				new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), 
 				new Claim("userId", user.Id), 
+				new Claim("businessId", businessId.ToString()), 
 			}
 			.Union(userClaims)
 			.Union(roleClaims);

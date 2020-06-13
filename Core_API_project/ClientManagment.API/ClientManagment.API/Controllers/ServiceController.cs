@@ -1,11 +1,16 @@
-﻿using System.Threading.Tasks;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Threading.Tasks;
 using ClientManagement.Core.Entities.DTO;
 using ClientManagement.Core.Helpers;
 using ClientManagement.Core.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Extensions;
 
 namespace ClientManagment.API.Controllers
 {
+	[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ServiceController : ControllerBase
@@ -90,6 +95,17 @@ namespace ClientManagment.API.Controllers
 		public async Task<IActionResult> GetServiceRequestByIdAsync(int serviceRequestId)
 		{
 			return Ok(await _clientServiceRequest.GetUserServiceRequestByIdAsync(serviceRequestId));
+		}
+		
+		/// <summary>
+		/// Gets future scheduled service requests for business
+		/// </summary>
+		/// <param name="businessId">Id of the business</param>
+		[Authorize( Roles = "Businessman")]
+		[HttpGet("BusinessSchedule/{businessId}")]
+		public async Task<IActionResult> GetBusinessScheduleItems(int businessId)
+		{
+			return Ok(await _clientServiceRequest.GetActiveServiceRequestForRBusinessAsync(HttpContext.User.Claims));
 		}
 	}
 }

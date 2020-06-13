@@ -20,6 +20,21 @@ namespace ClientManagment.Services.AutomapperProfiles
 				.ForMember(x => x.UserId, 
 					opt => 
 						opt.MapFrom(y => y.Id));
+			
+			CreateMap<ServiceRequest, BusinessScheduledServiceRequestItemDto>()
+				.ForMember(x => x.Services,
+					opt =>
+						opt.MapFrom(y => y.ServiceServiceRequests
+							.Select(s => s.Service).ToList()))
+				.ForMember(x => x.UserName,
+					opt =>
+						opt.MapFrom(y => y.Client.Name))
+				.ForMember(x => x.UserSurname,
+					opt =>
+						opt.MapFrom(y => y.Client.Surname))
+				.ForMember(x => x.ServiceRequestId, 
+					opt => 
+						opt.MapFrom(y => y.Id));
 		}
 	}
 }

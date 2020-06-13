@@ -27,10 +27,7 @@ namespace ClientManagment.Services.Services
 				.FirstOrDefaultAsync(x => x.Name.Trim() == model.Name.Trim());
 			if (business != null)
 			{
-				throw new HttpResponseException()
-				{
-					Status = 409, Value = new {Name = "There is already a business registered with this name"}
-				};
+				throw new HttpResponseException(409, "Name", "There is already a business registered with this name");
 			}
 
 			// Check if business type exists
@@ -39,11 +36,8 @@ namespace ClientManagment.Services.Services
 				                          && x.IsActive == true);
 			if (businessType == null)
 			{
-				throw new HttpResponseException()
-				{
-					Status = 409,
-					Value = new { BusinessTypeId = $"There is no active business type with id of {model.BusinessTypeId}" }
-				};
+				throw new HttpResponseException(409, "BusinessTypeId",
+					$"There is no active business type with id of {model.BusinessTypeId}.");
 			}
 
 			// Create new business

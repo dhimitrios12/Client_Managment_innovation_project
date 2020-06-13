@@ -12,7 +12,7 @@ namespace ClientManagment.API.Helpers
 		{
 			if (context.Exception is HttpResponseException exception)
 			{
-				context.Result = new ObjectResult(exception.Value)
+				context.Result = new ObjectResult(exception.Field)
 				{
 					StatusCode = exception.Status,
 				};
