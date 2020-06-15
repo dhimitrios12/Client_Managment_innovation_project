@@ -15,8 +15,6 @@ class Auth with ChangeNotifier {
   DateTime _expiryDate; // For token
   String _userId;
 
-  CustomDioClient dio = CustomDioClient(Dio());
-
   bool get isAthenticated {
     return token != null;
   }
@@ -59,7 +57,7 @@ class Auth with ChangeNotifier {
     const String url = '/Authentication/Token';
 
     try {
-      final Response response = await dio.client.post(
+      final Response response = await CustomDioClient().dio.post(
         url,
         data: {
           "email": email,
@@ -80,7 +78,7 @@ class Auth with ChangeNotifier {
       String name, String surname, String email, String password) async {
     const String url = '/Authentication/Register';
     try {
-      final Response response = await dio.client.post(
+      final Response response = await CustomDioClient().dio.post(
         url,
         data: {
           "name": name,
@@ -110,6 +108,8 @@ class Auth with ChangeNotifier {
       _mapUserRoles(userData.roles);
       _token = userData.token;
       _expiryDate = DateTime.parse(userData.tokenExpirationDate);
+      // Add authorization token to dio headers
+      CustomDioClient().addAuthenticationHeader(token);
     }
   }
 }

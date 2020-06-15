@@ -100,10 +100,9 @@ namespace ClientManagment.API.Controllers
 		/// <summary>
 		/// Gets future scheduled service requests for business
 		/// </summary>
-		/// <param name="businessId">Id of the business</param>
 		[Authorize( Roles = "Businessman")]
-		[HttpGet("BusinessSchedule/{businessId}")]
-		public async Task<IActionResult> GetBusinessScheduleItems(int businessId)
+		[HttpGet("BusinessSchedule")]
+		public async Task<IActionResult> GetBusinessScheduleItems()
 		{
 			return Ok(await _clientServiceRequest.GetActiveServiceRequestForRBusinessAsync(HttpContext.User.Claims));
 		}

@@ -1,3 +1,4 @@
+import 'package:clientManagmentMobile/providers/business_events_provider.dart';
 import 'package:clientManagmentMobile/screens/auth_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,8 +17,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    return ChangeNotifierProvider.value(
-      value: Auth(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (ctx) => Auth(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => BusinessEvents(),
+        ),
+      ],
       child: Consumer<Auth>(
         builder: (context, authObject, _) => MaterialApp(
           title: 'Flutter Demo',

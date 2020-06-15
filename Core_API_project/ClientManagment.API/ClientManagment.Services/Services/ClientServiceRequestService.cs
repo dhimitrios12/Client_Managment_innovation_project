@@ -131,7 +131,7 @@ namespace ClientManagment.Services.Services
 				.ThenInclude(x => x.Service)
 				.Include(x => x.Client)
 				.Where(s => s.ServiceServiceRequests
-					.Any(ssr => ssr.Service.BusinessId == businessId))
+					.Any(ssr => ssr.Service.BusinessId == businessId) && s.IsActive == true)
 				.ToListAsync();
 
 			var scheduledServicesMap = _mapper.Map<List<BusinessScheduledServiceRequestItemDto>>(scheduledServices);

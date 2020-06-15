@@ -16,7 +16,7 @@ namespace ClientManagment.PersistanceV2.EntitiesConfiguration
 			builder.Property(x => x.EndTime).IsRequired();
 			builder.Property(x => x.CreatedOn).IsRequired();
 			builder.Property(x => x.UserId).IsRequired();
-			builder.Property(x => x.IsActive).HasDefaultValue(true);
+			builder.Property(x => x.IsActive);
 			builder.HasOne(x => x.Client)
 				.WithMany()
 				.HasForeignKey(x => x.UserId);
