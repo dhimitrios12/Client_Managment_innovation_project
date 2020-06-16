@@ -2,6 +2,7 @@ import 'package:clientManagmentMobile/providers/business_events_provider.dart';
 import 'package:clientManagmentMobile/screens/auth_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
 import './screens/auth_screen.dart';
@@ -16,6 +17,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    initializeDateFormatting('sq');
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     return MultiProvider(
       providers: [
@@ -31,7 +33,7 @@ class MyApp extends StatelessWidget {
           title: 'Flutter Demo',
           theme: ThemeData(
             primarySwatch: Colors.blue,
-            accentColor: Colors.red,
+            accentColor: Colors.deepOrange,
             visualDensity: VisualDensity.adaptivePlatformDensity,
             textTheme: ThemeData.light().textTheme.copyWith(
                   headline6: TextStyle(

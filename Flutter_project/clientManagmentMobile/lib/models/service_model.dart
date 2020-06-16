@@ -1,8 +1,8 @@
 class Services {
   String serviceName;
   String description;
-  int price;
-  int duration;
+  double price;
+  double duration;
   int businessId;
 
   Services(
@@ -15,8 +15,8 @@ class Services {
   Services.fromJson(Map<String, dynamic> json) {
     serviceName = json['serviceName'];
     description = json['description'];
-    price = json['price'];
-    duration = json['duration'];
+    price = (json['price'] as num).toDouble();
+    duration = (json['duration'] as num).toDouble();
     businessId = json['businessId'];
   }
 

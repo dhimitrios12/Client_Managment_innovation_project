@@ -3,8 +3,8 @@ import './service_model.dart';
 class ServiceRequest {
   int serviceRequestId;
   String notes;
-  String startTime;
-  String endTime;
+  DateTime startTime;
+  DateTime endTime;
   String userName;
   String userSurname;
   bool isApproved;
@@ -23,8 +23,8 @@ class ServiceRequest {
   ServiceRequest.fromJson(Map<String, dynamic> json) {
     serviceRequestId = json['serviceRequestId'];
     notes = json['notes'];
-    startTime = json['startTime'];
-    endTime = json['endTime'];
+    startTime = DateTime.parse(json['startTime']);
+    endTime = DateTime.parse(json['endTime']);
     userName = json['userName'];
     userSurname = json['userSurname'];
     isApproved = json['isApproved'];
